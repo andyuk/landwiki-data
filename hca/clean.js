@@ -1,6 +1,8 @@
 var mongoose = require('mongoose');
 	_ = require('underscore'),
-	async = require('async');
+	async = require('async'),
+	OsGridRef = require('../lib/osgridref');
+
 mongoose.connect('mongodb://localhost/landwiki');
 
 var landSchema = mongoose.Schema({
@@ -18,9 +20,7 @@ var Land = mongoose.model('land', landSchema);
 var i = 1;
 
 function calculateIcon(data) {
-	// if (data['Planning status'] !== 'None')
-	// 	return 'small_red';
-	return 'small_red';
+	return 'small_purple';
 }
 
 function batchUpdate() {
@@ -37,24 +37,30 @@ function batchUpdate() {
 
 			var originalData = doc.toObject();
 
+			if (typeof(originalData.Easting) !== 'number' || typeof(originalData.Northing) !== 'number') {
+				console.warn('Invalid easting/northing, skipping');
+				console.dir(originalData);
+				doc.status = 0;
+				doc.save();
+				return callback(null);
+			}
+
+			var gridRef = new OsGridRef(originalData.Easting, originalData.Northing);
+			var point = OsGridRef.osGridToLatLong(gridRef);
+
 			var landRecord = {
-				longitude: originalData.Longitude,
-				latitude: originalData.Latitude,
-				title: originalData.Title,
-				labels: 'nlud-pdl-2009 hca ukgov brownfield',
+				longitude: point._lon,
+				latitude: point._lat,
+				title: originalData.Holding_Name,
+				labels: 'hca public',
 				status: 1,
 				originalData: originalData,
 				icon: calculateIcon(originalData)
 			};
 			delete landRecord.originalData._id;
-			delete landRecord.originalData.EASTING;
-			delete landRecord.originalData.NORTHING;
-			delete landRecord.originalData.Label1;
-			delete landRecord.originalData.Labels;
-			delete landRecord.originalData.Latitude;
-			delete landRecord.originalData.Longitude;
+			delete landRecord.originalData.Easting;
+			delete landRecord.originalData.Northing;
 			delete landRecord.originalData.updated;
-			delete landRecord.originalData.title;
 
 			doc.status = 0;
 			doc.save();
@@ -75,10 +81,12 @@ function batchUpdate() {
 				console.log(err);
 				return;
 			}
-			if (results.length > 0)
+			if (results.length > 0) {
 				batchUpdate();
-			else 
+			} else  {
 				console.log('complete');
+				process.exit();
+			}
 		});
 	});
 }
@@ -86,10 +94,8 @@ function batchUpdate() {
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function callback () {
-  // yay!
 
 	console.log('connection open');
 
  	batchUpdate();
-
 });
