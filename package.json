@@ -1,0 +1,23 @@
+{
+  "name": "landwiki-data",
+  "version": "0.0.1",
+  "description": "Tools to help importing data into LandWiki",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/andyuk/landwiki-data.git"
+  },
+  "author": "",
+  "license": "BSD",
+  "bugs": {
+    "url": "https://github.com/andyuk/landwiki-data/issues"
+  },
+  "dependencies": {
+    "mongoose": "~3.6.17",
+    "underscore": "~1.5.1",
+    "async": "~0.2.9"
+  }
+}

@@ -8,4 +8,4 @@ See the README.md file inside each import folder.
 
 ## How to export
 
-    mongoexport --db landwiki --collection lands --csv --fieldFile export-fields.txt --out land-export.csv
+See the [LandWiki](https://github.com/andyuk/landwiki) project. Run scripts/csvdump.js
