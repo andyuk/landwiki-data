@@ -11,14 +11,14 @@ http://gridreferencefinder.com/batchConvert/batchConvert.htm
 
 2. Change line endings to Unix and export as UTF8 in Sublime.
 
-2. Import
+3. Import
 
-mongoimport --db landwiki --collection lands --type csv --headerline --file land.csv
+mongoimport --db landwiki --collection lands --type csv --headerline --file nlud/land.csv
 
 
 ## Clean
 
-node clean.js
+node nlud/clean.js
 
 ## Remove old records
 
